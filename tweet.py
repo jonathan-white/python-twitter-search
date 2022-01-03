@@ -78,21 +78,21 @@ json_response = connect_to_endpoint(url[0], headers, url[1])
 
 #data = json_response
 
-#print(json.dumps(json_response, indent=4, sort_keys=True))
+print(json.dumps(json_response, indent=4, sort_keys=True))
 
 # Save Results to a JSON file
-with open('data.json', 'w') as output_file:
+with open('exports/data.json', 'w') as output_file:
   json.dump(json_response, output_file)
 
 
 # Save Results to CSV
 # Approach A: (Simple Approach)
 df = pd.DataFrame(json_response['data'])
-df.to_csv('dataA.csv')
+df.to_csv('exports/dataA.csv')
 
 # Approach B: (Custom Approach)
 # Create file
-csvFile = open("dataB.csv", "a", newline="", encoding='utf-8')
+csvFile = open("exports/dataB.csv", "a", newline="", encoding='utf-8')
 csvWriter = csv.writer(csvFile)
 
 #Create headers for the data you want to save, in this example, we only want save these columns in our dataset
@@ -103,7 +103,7 @@ def append_to_csv(json_response, fileName):
     counter = 0
 
     # Open Or create the target CSV file
-    csvFile = open('data.csv', 'a', newline='', encoding='utf-8')
+    csvFile = open('exports/dataB.csv', 'a', newline='', encoding='utf-8')
     csvWriter = csv.writer(csvFile)
 
     # Loop through each tweet
@@ -156,4 +156,4 @@ def append_to_csv(json_response, fileName):
     print(f'# of Tweets added from this response: {counter}')
 
 
-append_to_csv(json_response, 'dataB.csv')
+append_to_csv(json_response, 'exports/dataB.csv')
