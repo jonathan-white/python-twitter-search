@@ -16,7 +16,7 @@ import pandas as pd
 import csv
 
 # For parsing the dates received from twitter in readable formats
-import datetime
+from datetime import datetime, timedelta
 import dateutil.parser
 import unicodedata
 
@@ -66,17 +66,18 @@ def connect_to_endpoint(url, headers, params, next_token=None):
 
 # Inputs for the request
 
+
 bearer_token = auth()
 headers = create_headers(bearer_token)
 keyword = 'xbox lang:en'
-start_time = '2021-12-29T00:00:00.000Z'  # Change this to be today - 7 days
-end_time = '2022-01-02T00:00:00.000Z' # change this to be now - 10 seconds
+start_datetime = dateutil.parser.parse(str(datetime.now() - timedelta(days=6)))
+start_time = f'{start_datetime.isoformat()}Z' # format:2022-01-01T00:00:00.000Z
+end_datetime = dateutil.parser.parse(str(datetime.now() - timedelta(hours=1)))
+end_time = f'{end_datetime.isoformat()}Z' # change this to be now - 10 seconds
 max_results = 15
 
 url = create_url(keyword, start_time, end_time, max_results)
 json_response = connect_to_endpoint(url[0], headers, url[1])
-
-#data = json_response
 
 print(json.dumps(json_response, indent=4, sort_keys=True))
 
@@ -95,8 +96,11 @@ df.to_csv('exports/dataA.csv')
 csvFile = open("exports/dataB.csv", "a", newline="", encoding='utf-8')
 csvWriter = csv.writer(csvFile)
 
-#Create headers for the data you want to save, in this example, we only want save these columns in our dataset
-csvWriter.writerow(['author id', 'created_at', 'geo', 'id','lang', 'like_count', 'quote_count', 'reply_count','retweet_count','source','tweet'])
+# Create headers for the data you want to save, in this example, we only want 
+# save these columns in our dataset
+csvWriter.writerow(['author id', 'created_at', 'geo', 'id','lang', 'like_count', 
+                    'quote_count', 'reply_count','retweet_count','source',
+                    'tweet'])
 csvFile.close()
 
 def append_to_csv(json_response, fileName):
@@ -108,7 +112,7 @@ def append_to_csv(json_response, fileName):
 
     # Loop through each tweet
     for tweet in json_response['data']:
-        # Create a variable for each field since some of the keys might not exist 
+        # Create a variable for each field as some of the keys might not exist 
         # for some tweets.
 
         # 1. Author ID
@@ -142,8 +146,8 @@ def append_to_csv(json_response, fileName):
         text = tweet['text']
 
         # Assemble all data in a list
-        res = [author_id, created_at, geo, tweet_id, lang, like_count, quote_count, 
-                reply_count, retweet_count, source, text]
+        res = [author_id, created_at, geo, tweet_id, lang, like_count, 
+               quote_count, reply_count, retweet_count, source, text]
 
         # Append the result to the CSV file
         csvWriter.writerow(res)
